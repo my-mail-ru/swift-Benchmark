@@ -9,11 +9,11 @@ public func timethis(count: Int, title: String? = nil, _ body: () throws -> Void
 	var start = rusage()
 	var finish = rusage()
 	clock_gettime(CLOCK_MONOTONIC, &clockStart)
-	getrusage(RUSAGE_SELF.rawValue, &start)
+	getrusage(rusageSelf(), &start)
 	for _ in 0..<count {
 		try body()
 	}
-	getrusage(RUSAGE_SELF.rawValue, &finish)
+	getrusage(rusageSelf(), &finish)
 	clock_gettime(CLOCK_MONOTONIC, &clockFinish)
 	let wcl = clockFinish - clockStart
 	let usr = finish.ru_utime - start.ru_utime
@@ -22,4 +22,12 @@ public func timethis(count: Int, title: String? = nil, _ body: () throws -> Void
 	if count < minCount || Double(usr + sys) < minCpuTime {
 		print("\t(warning: too few iterations for a reliable count)")
 	}
+}
+
+private func rusageSelf() -> __rusage_who {
+	return RUSAGE_SELF
+}
+
+private func rusageSelf() -> __rusage_who.RawValue {
+	return RUSAGE_SELF.rawValue
 }
