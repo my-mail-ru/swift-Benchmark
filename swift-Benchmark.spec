@@ -9,8 +9,8 @@ URL:           https://github.com/my-mail-ru/%{name}
 Source0:       https://github.com/my-mail-ru/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 BuildRoot:     %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires: swift
-BuildRequires: swift-packaging
+BuildRequires: swift >= 3.0.2
+BuildRequires: swift-packaging >= 0.6
 
 %swift_find_provides_and_requires
 
@@ -43,5 +43,20 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{swift_libdir}/*.so
+
+
+%package devel
+Summary:  Benchmark running times of Swift code
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+The Benchmark library provides a number of functions to help you figure out
+how long (both in terms of wallclock and CPU time) it takes to execute some code.
+
+%{?__revision:Built from revision %{__revision}.}
+
+
+%files devel
+%defattr(-,root,root,-)
 %{swift_moduledir}/*.swiftmodule
 %{swift_moduledir}/*.swiftdoc
