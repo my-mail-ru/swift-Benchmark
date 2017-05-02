@@ -1,4 +1,10 @@
+#if os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || CYGWIN
 import Glibc
+#elseif os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
+import Darwin
+@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
+let CLOCK_MONOTONIC = _CLOCK_MONOTONIC
+#endif
 
 let minCpuTime = 0.4
 
@@ -23,13 +29,17 @@ public func benchmark(count: Int = 1, _ body: () throws -> Void) rethrows -> Sam
 	var clockFinish = timespec()
 	var start = rusage()
 	var finish = rusage()
-	clock_gettime(CLOCK_MONOTONIC, &clockStart)
+	if #available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *) {
+		clock_gettime(CLOCK_MONOTONIC, &clockStart)
+	}
 	getrusage(rusageSelf(), &start)
 	for _ in 0..<count {
 		try body()
 	}
 	getrusage(rusageSelf(), &finish)
-	clock_gettime(CLOCK_MONOTONIC, &clockFinish)
+	if #available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *) {
+		clock_gettime(CLOCK_MONOTONIC, &clockFinish)
+	}
 	let wcl = clockFinish - clockStart
 	let usr = finish.ru_utime - start.ru_utime
 	let sys = finish.ru_stime - start.ru_stime
@@ -44,10 +54,16 @@ public func timethis(count: Int, title: String? = nil, _ body: () throws -> Void
 	}
 }
 
-private func rusageSelf() -> __rusage_who {
-	return RUSAGE_SELF
-}
+#if os(Linux)
+	private func rusageSelf() -> __rusage_who {
+		return RUSAGE_SELF
+	}
 
-private func rusageSelf() -> __rusage_who.RawValue {
-	return RUSAGE_SELF.rawValue
-}
+	private func rusageSelf() -> __rusage_who.RawValue {
+		return RUSAGE_SELF.rawValue
+	}
+#else
+	private func rusageSelf() -> Int32 {
+		return RUSAGE_SELF
+	}
+#endif

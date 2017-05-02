@@ -1,4 +1,8 @@
+#if os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || CYGWIN
 import Glibc
+#elseif os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
+import Darwin
+#endif
 
 func + (lhs: timeval, rhs: timeval) -> timeval {
 	var result = timeval(
