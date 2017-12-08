@@ -11,7 +11,7 @@ class BenchmarkTests : XCTestCase {
 		var string = ""
 		let sample = benchmark(count: 1000000) {
 			count += 1
-			string.characters.append("Ъ")
+			string.append("Ъ")
 		}
 		XCTAssertEqual(count, 1000000)
 		XCTAssertEqual(sample.count, 1000000)

@@ -2,8 +2,6 @@
 import Glibc
 #elseif os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 import Darwin
-@available(macOS 10.12, iOS 10.0, watchOS 3.0, tvOS 10.0, *)
-let CLOCK_MONOTONIC = _CLOCK_MONOTONIC
 #endif
 
 let minCpuTime = 0.4
